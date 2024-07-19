@@ -1,0 +1,49 @@
+from g4f.client import Client
+client = Client()
+
+def func():
+    event_name = input("Enter the event name: ")
+    return event_name
+
+def generate_prompt(event_name):
+    prompt = (
+        f"Provide detailed information about the following historical event in the format below:\n\n"
+        f"Query: {event_name}\n"
+        f"1. About the Event:\n"
+        f"2. Timeline:\n"
+        f"3. People/Parties Involved:\n"
+        f"4. Regions Affected:\n"
+        f"5. Key Takeaways:\n"
+        f"6. Summary:\n"
+        f"7. Articles/Books Helpful:\n"
+        f"8. TLDR:\n\n"
+        f"Provide detailed and accurate information."
+    )
+    return prompt
+
+def fetch(prompt):
+    chtcompl = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        stream=True
+    )
+
+    response = ""
+    for completion in chtcompl:
+        content = completion.choices[0].delta.content
+        if content:
+            response+=content
+    return response
+
+def main():
+    event_name = func()
+
+    prompt = generate_prompt(event_name)
+    response = fetch(prompt)
+    print("\n\nResponse request taken:\n")
+    print(response)
+
+if __name__ == "__main__":
+    main()
+
+# Search for queries like ww2/vietnam conflicts/history of oil trade etc...
